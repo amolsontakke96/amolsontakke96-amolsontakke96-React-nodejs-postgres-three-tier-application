@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234567890
+      POSTGRES_DB: mydb1
+    volumes:
+      - pgdata:/var/lib/posgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
+  backend:
+    build: ./my-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+       condition: service_healthy
+    environment:
+      PGUSER: postgres
+      PGPASSWORD: 1234567890
+      PGHOST: db
+      PGDATABASE: mydb1
+      PGPORT: 5432
+    networks:
+      - app-network
+
+  frontend:
+    build: ./my-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://backend:5000  # Add backend URL
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+
+networks:
+  app-network:
+    external: true
