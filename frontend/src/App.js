@@ -5,7 +5,7 @@ import axios from 'axios';
 function App() {
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({ name: '', email: '' });
-  const API_URL = process.env.REACT_APP_API_URL || 'http://host.docker.internal:5000:5000';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://backend:5000';
   
   console.log('API_URL:', process.env.REACT_APP_API_URL); // Debugging line
   // Fetch users from the backend
